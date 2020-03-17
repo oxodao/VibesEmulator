@@ -46,6 +46,12 @@ func main() {
 	settings.HandleFunc("/setPushToken", middlewares.CheckUserMiddleware(prv, routes.SetPushTokenRoute(prv)))
 	settings.HandleFunc("/setXRatedEnabled", middlewares.CheckUserMiddleware(prv, routes.SetXRatedEnabledRoute(prv)))
 
+	r.PathPrefix("/pictures/").HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Access on " + r.RequestURI)
+		http.StripPrefix("/pictures/", http.FileServer(http.Dir("./pictures"))).ServeHTTP(w, r)
+	})
+
+
 	srv := &http.Server{
 		Handler: r,
 		Addr:    "127.0.0.1:4568",
