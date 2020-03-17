@@ -1,0 +1,17 @@
+# github.com/gorilla/mux v1.7.3
+github.com/gorilla/mux
+# github.com/jinzhu/gorm v1.9.12
+github.com/jinzhu/gorm
+github.com/jinzhu/gorm/dialects/sqlite
+# github.com/jinzhu/inflection v1.0.0
+github.com/jinzhu/inflection
+# github.com/matoous/go-nanoid v1.1.0
+github.com/matoous/go-nanoid
+# github.com/mattn/go-sqlite3 v2.0.1+incompatible
+github.com/mattn/go-sqlite3
+# golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
+golang.org/x/crypto/argon2
+golang.org/x/crypto/blake2b
+# golang.org/x/sys v0.0.0-20190412213103-97732733099d
+golang.org/x/sys/cpu
+golang.org/x/sys/unix
