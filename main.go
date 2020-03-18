@@ -8,7 +8,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/oxodao/vibes/middlewares"
-	"github.com/oxodao/vibes/models"
 	"github.com/oxodao/vibes/routes"
 	"github.com/oxodao/vibes/services"
 
@@ -20,18 +19,18 @@ func main() {
 	fmt.Println("Vibes API - Indev")
 
 	prv := services.NewProvider()
-	prv.DB.AutoMigrate(&models.Picture{})
-	prv.DB.AutoMigrate(&models.User{})
-	prv.DB.AutoMigrate(&models.Contact{})
 
 	r := mux.NewRouter()
 
 	auth := r.PathPrefix("/auth/").Subrouter()
 	auth.HandleFunc("/register", routes.RegisterRoute(prv))
+	auth.HandleFunc("/logout", routes.LogoutRoute(prv))
 
 	core := r.PathPrefix("/core/").Subrouter()
 	core.HandleFunc("/uploadPicture", routes.UploadPictureRoute(prv))
 	core.HandleFunc("/getContacts", middlewares.CheckUserMiddleware(prv, routes.GetContactsRoute(prv)))
+	//core.HandleFunc("/createContactWithUsername", middlewares.CheckUserMiddleware(prv, routes.CreateContactRoute(prv)))
+	core.HandleFunc("/createContactRandom", middlewares.CheckUserMiddleware(prv, routes.CreateContactRandomRoute(prv)))
 	//core.HandleFunc("/getPotentialContacts", middlewares.CheckUserMiddleware(prv, routes.GetPotentialContactsRoute(prv)))
 
 	settings := r.PathPrefix("/settings/").Subrouter()
@@ -46,11 +45,10 @@ func main() {
 	settings.HandleFunc("/setPushToken", middlewares.CheckUserMiddleware(prv, routes.SetPushTokenRoute(prv)))
 	settings.HandleFunc("/setXRatedEnabled", middlewares.CheckUserMiddleware(prv, routes.SetXRatedEnabledRoute(prv)))
 
-	r.PathPrefix("/pictures/").HandlerFunc(func (w http.ResponseWriter, r *http.Request) {
+	r.PathPrefix("/pictures/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Access on " + r.RequestURI)
 		http.StripPrefix("/pictures/", http.FileServer(http.Dir("./pictures"))).ServeHTTP(w, r)
 	})
-
 
 	srv := &http.Server{
 		Handler: r,

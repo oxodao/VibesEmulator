@@ -33,6 +33,7 @@ type User struct {
 // GetUserWithPictureURL replaces the Picture field with a full link to the picture. Should not be saved in DB.
 func (u *User) GetUserWithPictureURL() User {
 	// SHOULD ABSOLUTELY NOT BE SAVED TO THE DB
+	// If it is saved, that's maybe gorm's fault when updating the entity (If directly retreived from client)
 	u.Picture = "https://vibes.oxodao.fr/pictures/" + u.Picture
 	return *u
 }

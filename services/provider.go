@@ -8,20 +8,20 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/jinzhu/gorm"
+	"github.com/jmoiron/sqlx"
 	gonanoid "github.com/matoous/go-nanoid"
 	"golang.org/x/crypto/argon2"
 )
 
 // Provider is a provider
 type Provider struct {
-	DB          *gorm.DB
+	DB          *sqlx.DB
 	ArgonParams *ArgonParams
 }
 
 // NewProvider returns an instance of Provider
 func NewProvider() *Provider {
-	db, err := gorm.Open("sqlite3", "./the_test.db")
+	db, err := sqlx.Connect("sqlite3", "./the_test.db")
 	if err != nil {
 		panic("Failed to connect database")
 	}
