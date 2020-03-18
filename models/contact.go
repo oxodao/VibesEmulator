@@ -16,7 +16,12 @@ type Contact struct {
 
 // SetOtherUser sets the user to the contact's user
 func (c *Contact) SetOtherUser(currUser *User) {
-	if c.UserOne.ID == currUser.ID {
+	c.SetOtherUserID(currUser.ID)
+}
+
+// SetOtherUserID sets the user to the contact's user
+func (c *Contact) SetOtherUserID(uid uint) {
+	if c.UserOne.ID == uid {
 		c.User = c.UserTwo
 		c.Playable = c.Turn == 1
 	} else {

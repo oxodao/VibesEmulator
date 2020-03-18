@@ -15,6 +15,7 @@ func FindUserByToken(prv *services.Provider, token string) (*models.User, error)
 
 	row.Next()
 	err = row.StructScan(user)
+	row.Close()
 
 	return user, err
 }
@@ -29,6 +30,7 @@ func FindUserByUsername(prv *services.Provider, name string) (*models.User, erro
 
 	row.Next()
 	err = row.StructScan(user)
+	row.Close()
 
 	return user, err
 }

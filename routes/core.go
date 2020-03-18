@@ -82,6 +82,11 @@ func GetContactsRoute(prv *services.Provider) http.HandlerFunc {
 			}
 		}
 
+		myContacts, err := dal.GetContactsForUser(prv, u.ID)
+		if err != nil {
+			// ??
+		}
+
 		getContactsResponse, err := json.Marshal(struct {
 			AvailableGameLanguages  []string         `json:"availableGameLanguages"`
 			Contacts                []models.Contact `json:"contacts"`
@@ -92,7 +97,7 @@ func GetContactsRoute(prv *services.Provider) http.HandlerFunc {
 			AvailableGameLanguages:  []string{"fr"},
 			UserGameLanguage:        "fr",
 			RandomGameSearchOngoing: false,
-			Contacts:                []models.Contact{},
+			Contacts:                myContacts,
 			PotentialContacts:       randContacts,
 		})
 
