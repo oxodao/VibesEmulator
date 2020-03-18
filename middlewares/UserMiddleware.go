@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/oxodao/vibes/models"
+	"github.com/oxodao/vibes/dal"
 	"github.com/oxodao/vibes/services"
 )
 
@@ -18,11 +18,14 @@ func CheckUserMiddleware(prv *services.Provider, next http.HandlerFunc) http.Han
 			return
 		}
 
-		var u models.User
-		prv.DB.Where("latest_token = ?", cookie.Value).Find(&u)
+		u, err := dal.FindUserByToken(prv, cookie.Value)
+		if err != nil {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
 
 		ctx := r.Context()
-		ctx = context.WithValue(ctx, UserContext, &u)
+		ctx = context.WithValue(ctx, UserContext, u)
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	}

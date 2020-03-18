@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/oxodao/vibes/dal"
 	"github.com/oxodao/vibes/middlewares"
 	"github.com/oxodao/vibes/models"
 	"github.com/oxodao/vibes/services"
@@ -60,7 +61,6 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 // GetContactsRoute returns the friends + a tinder-like list of people
 func GetContactsRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		u, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -69,8 +69,11 @@ func GetContactsRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		// @TODO: Store them so that we don't have random each time and only refill the list when the user calls this route
-		var randUsers []models.User
-		prv.DB.Where("id != ?", u.ID).Order(utils.GetRandomFromDB(prv)).Limit(5).Find(&randUsers)
+		randUsers, err := dal.GenerateRandomContacts(prv, u.ID)
+
+		if err != nil {
+			//??
+		}
 
 		var randContacts []models.Contact = make([]models.Contact, len(randUsers))
 		for i := 0; i < len(randUsers); i++ {
@@ -105,7 +108,7 @@ func GetContactsRoute(prv *services.Provider) http.HandlerFunc {
 // CreateContactRandomRoute blabla
 func CreateContactRandomRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		u, ok := r.Context().Value(middlewares.UserContext).(*models.User)
+		_, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
 			w.WriteHeader(http.StatusInternalServerError)
 			fmt.Println("Can't cast the user!")
@@ -115,7 +118,29 @@ func CreateContactRandomRoute(prv *services.Provider) http.HandlerFunc {
 		// Temporary
 		// Should be only where "randomSearchOngoing" I think
 		var rndContact models.Contact
-		prv.DB.Model(&models.Contact{}).Not("user_one", u.ID).Not("user_two", u.ID).Order(utils.GetRandomFromDB(prv)).First(&rndContact)
+
+		resp, err := json.Marshal(rndContact)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(resp)
+	}
+}
+
+// CreateContactWithUsernameRoute blabla
+func CreateContactWithUsernameRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		u, ok := r.Context().Value(middlewares.UserContext).(*models.User)
+		if !ok {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Println("Can't cast the user!")
+			return
+		}
+
+		otherUser := r.URL.Query().Get("username")
+		rndContact, err := dal.CreateOrFetchContactByName(prv, u, otherUser)
 
 		resp, err := json.Marshal(rndContact)
 		if err != nil {

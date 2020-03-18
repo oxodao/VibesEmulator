@@ -12,6 +12,15 @@
             "program": "${workspaceFolder}",
             "env": {},
             "args": []
+        },
+        {
+            "name": "Launch (With port)",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "env": {},
+            "args": ["-port", "1635"]
         }
     ]
 }

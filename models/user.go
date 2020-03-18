@@ -1,8 +1,6 @@
 package models
 
-import (
-	"github.com/jinzhu/gorm"
-)
+import "time"
 
 /*
    private static final int FEMALE = 0;
@@ -12,22 +10,23 @@ import (
 
 // User Represent a user
 type User struct {
-	gorm.Model
-	LastAction   int64  `json:"lastAction"`
-	FirstName    string `json:"name"`
-	Username     string `json:"username"`
-	Gender       int    `json:"gender"`
-	GenderWanted int    `json:"genderWanted"`
-	Country      string `json:"country"`
-	Age          int    `json:"age"`
-	AgeFrom      int    `json:"ageFrom"`
-	AgeTo        int    `json:"ageTo"`
-	Picture      string `json:"picture"`
-	Language     string `json:"gameLanguage"`
-	IsPremium    bool   `json:"isPremium"`
-	IsAdult      bool   `json:"isXRatedEnabled"`
-	Password     string `json:"-"`
-	LatestToken  string `json:"-"`
+	ID           uint      `json:"-" db:"ID"`
+	CreatedAt    time.Time `json:"-" db:"CREATED_AT"`
+	LastAction   int64     `json:"lastAction" db:"LAST_ACTION"`
+	FirstName    string    `json:"name" db:"FIRSTNAME"`
+	Username     string    `json:"username" db:"USERNAME"`
+	Gender       int       `json:"gender" db:"GENDER"`
+	GenderWanted int       `json:"genderWanted" db:"GENDER_WANTED"`
+	Country      string    `json:"country" db:"COUNTRY"`
+	Age          int       `json:"age" db:"AGE"`
+	AgeFrom      int       `json:"ageFrom" db:"AGE_FROM"`
+	AgeTo        int       `json:"ageTo" db:"AGE_TO"`
+	Picture      string    `json:"picture" db:"PICTURE"`
+	Language     string    `json:"gameLanguage" db:"LANG"`
+	IsPremium    bool      `json:"isPremium"  db:"PREMIUM"`
+	IsAdult      bool      `json:"isXRatedEnabled" db:"ADULT"`
+	Password     string    `json:"-" db:"PASSWORD"`
+	LatestToken  string    `json:"-" db:"LATEST_TOKEN"`
 }
 
 // GetUserWithPictureURL replaces the Picture field with a full link to the picture. Should not be saved in DB.

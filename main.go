@@ -24,14 +24,18 @@ func main() {
 
 	auth := r.PathPrefix("/auth/").Subrouter()
 	auth.HandleFunc("/register", routes.RegisterRoute(prv))
+	auth.HandleFunc("/login", routes.LoginRoute(prv))
 	auth.HandleFunc("/logout", routes.LogoutRoute(prv))
 
 	core := r.PathPrefix("/core/").Subrouter()
 	core.HandleFunc("/uploadPicture", routes.UploadPictureRoute(prv))
 	core.HandleFunc("/getContacts", middlewares.CheckUserMiddleware(prv, routes.GetContactsRoute(prv)))
-	//core.HandleFunc("/createContactWithUsername", middlewares.CheckUserMiddleware(prv, routes.CreateContactRoute(prv)))
+	core.HandleFunc("/createContactWithUsername", middlewares.CheckUserMiddleware(prv, routes.CreateContactWithUsernameRoute(prv)))
 	core.HandleFunc("/createContactRandom", middlewares.CheckUserMiddleware(prv, routes.CreateContactRandomRoute(prv)))
 	//core.HandleFunc("/getPotentialContacts", middlewares.CheckUserMiddleware(prv, routes.GetPotentialContactsRoute(prv)))
+
+	messenger := r.PathPrefix("/messenger/").Subrouter()
+	messenger.HandleFunc("/getMessages", middlewares.CheckUserMiddleware(prv, routes.GetMessages(prv)))
 
 	settings := r.PathPrefix("/settings/").Subrouter()
 	settings.HandleFunc("/getAll", middlewares.CheckUserMiddleware(prv, routes.GetAllSettingsRoute(prv)))
@@ -48,6 +52,10 @@ func main() {
 	r.PathPrefix("/pictures/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Access on " + r.RequestURI)
 		http.StripPrefix("/pictures/", http.FileServer(http.Dir("./pictures"))).ServeHTTP(w, r)
+	})
+
+	r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("UNHANDLED ACCESS: " + r.RequestURI)
 	})
 
 	srv := &http.Server{

@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/oxodao/vibes/dal"
 	"github.com/oxodao/vibes/middlewares"
 	"github.com/oxodao/vibes/models"
 	"github.com/oxodao/vibes/services"
@@ -58,14 +59,14 @@ func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 			IsAdult:      ageInt > 18,
 			AgeFrom:      ageInt - 2,
 			AgeTo:        ageInt + 2,
-			Username:     q.Get("firstName") + prv.GenerateUID(5),
+			Username:     q.Get("firstName") + "_" + prv.GenerateUID(5),
 			GenderWanted: genderWanted,
 			LastAction:   time.Now().Unix(),
 			Password:     pwdHashed,
 			LatestToken:  prv.GenerateUID(20),
 		}
 
-		prv.DB.Create(&u)
+		dal.RegisterUser(prv, &u)
 
 		http.SetCookie(w, &http.Cookie{
 			Name:    "PHPSESSID",
@@ -91,6 +92,40 @@ func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
+// LoginRoute blabla
+func LoginRoute(prv *services.Provider) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		username := r.URL.Query().Get("username")
+		password := r.URL.Query().Get("password")
+
+		u, err := dal.FindUserByUsername(prv, username)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+
+		pwdHashed, err := prv.HashPassword(password)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		if pwdHashed != u.Password {
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+
+		userJSON, err := json.Marshal(u)
+
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+
+		w.Write(userJSON)
+	}
+}
+
 // LogoutRoute blabla
 func LogoutRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -104,7 +139,7 @@ func LogoutRoute(prv *services.Provider) http.HandlerFunc {
 
 		// The game says the data will be wiped from the server but I think we can find
 		// a way around that to let the user log back in again
-		prv.DB.Model(&u).Update("latest_token", "")
+		dal.SetLatestToken(prv, u.ID, "")
 
 	}
 }

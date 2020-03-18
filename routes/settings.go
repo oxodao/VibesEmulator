@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/oxodao/vibes/dal"
 	"github.com/oxodao/vibes/middlewares"
 	"github.com/oxodao/vibes/models"
 	"github.com/oxodao/vibes/services"
@@ -68,8 +69,7 @@ func SetAgeRangeRoute(prv *services.Provider) http.HandlerFunc {
 
 		user.AgeFrom = ageFrom
 		user.AgeTo = ageTo
-
-		prv.DB.Model(&user).Update("age_from", ageFrom).Update("age_to", ageTo)
+		dal.UpdateAge(prv, user.ID, -1, ageFrom, ageTo)
 
 		userRsp, err := json.Marshal(user.GetUserWithPictureURL())
 		if err != nil {
@@ -98,8 +98,7 @@ func SetAgeRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		user.Age = age
-
-		prv.DB.Model(&user).Update("age", age)
+		dal.UpdateAge(prv, user.ID, age, -1, -1)
 
 		userRsp, err := json.Marshal(user.GetUserWithPictureURL())
 		if err != nil {
@@ -124,8 +123,7 @@ func SetFirstNameRoute(prv *services.Provider) http.HandlerFunc {
 		firstname := r.URL.Query().Get("firstName")
 
 		user.FirstName = firstname
-
-		prv.DB.Model(&user).Update("first_name", firstname)
+		dal.UpdateFirstname(prv, user.ID, firstname)
 
 		userRsp, err := json.Marshal(user.GetUserWithPictureURL())
 		if err != nil {
@@ -154,8 +152,7 @@ func SetGenderRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		user.Gender = gender
-
-		prv.DB.Model(&user).Update("gender", gender)
+		dal.UpdateGender(prv, user.ID, gender, -1)
 
 		userRsp, err := json.Marshal(user.GetUserWithPictureURL())
 		if err != nil {
@@ -185,7 +182,7 @@ func SetGenderWantedRoute(prv *services.Provider) http.HandlerFunc {
 
 		user.GenderWanted = gender
 
-		prv.DB.Model(&user).Update("gender_wanted", gender)
+		dal.UpdateGender(prv, user.ID, -1, gender)
 
 		userRsp, err := json.Marshal(user.GetUserWithPictureURL())
 		if err != nil {
@@ -214,7 +211,7 @@ func SetXRatedEnabledRoute(prv *services.Provider) http.HandlerFunc {
 		} else {
 			user.IsAdult = true
 		}
-		prv.DB.Model(&user).Update("is_adult", user.IsAdult)
+		dal.UpdateAdult(prv, user.ID, user.IsAdult)
 
 		resp, err := json.Marshal(user.GetUserWithPictureURL())
 
@@ -238,8 +235,7 @@ func SetGameLanguageRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		user.Language = r.URL.Query().Get("gameLanguage")
-
-		prv.DB.Model(&user).Update("language", user.Language)
+		dal.UpdateLanguage(prv, user.ID, user.Language)
 
 		resp, err := json.Marshal(user.GetUserWithPictureURL())
 
@@ -252,7 +248,7 @@ func SetGameLanguageRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// SetPictureRoute uploads a picture
+// SetPictureRoute uploads a picture @TODO: Check if the received picture is not in form of https://vibes.oxodao.fr/pictures/PICT
 func SetPictureRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(middlewares.UserContext).(*models.User)
@@ -277,7 +273,7 @@ func SetPictureRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		prv.DB.Model(&user).Update("picture", rndName)
+		dal.UpdatePicture(prv, user.ID, rndName)
 
 		uploadResponse, err := json.Marshal(user.GetUserWithPictureURL())
 		if err != nil {

@@ -3,21 +3,25 @@ package models
 // Contact represent a friend
 type Contact struct {
 	Distance           int  `json:"distance"`
-	IsFriendly         bool `json:"isFriendly"`
-	Level              int  `json:"level"`
-	Playable           bool `json:"playable"`
-	Progress           int  `json:"progress"`
-	UnreadMessageCount int  `json:"unreadMessageCount"`
-	User               User `json:"user" gorm:"-"`
-	UserOne            User `json:"-"`
-	UserTwo            User `json:"-"`
+	IsFriendly         bool `json:"isFriendly" db:"IS_FRIENDLY"`
+	Level              int  `json:"level" db:"FRIEND_LEVEL"`
+	Playable           bool `json:"playable" db:"-"`
+	Progress           int  `json:"progress" db:"PROGRESS"`
+	UnreadMessageCount int  `json:"unreadMessageCount" db:"-"`
+	User               User `json:"user" db:"-"`
+	Turn               int  `json:"-" db:"TURN"`
+	UserOne            User `json:"-" db:"INITIATOR"`
+	UserTwo            User `json:"-" db:"FRIEND"`
 }
 
 // SetOtherUser sets the user to the contact's user
 func (c *Contact) SetOtherUser(currUser *User) {
 	if c.UserOne.ID == currUser.ID {
 		c.User = c.UserTwo
+		c.Playable = c.Turn == 1
 	} else {
 		c.User = c.UserOne
+		c.Playable = c.Turn == 2
 	}
+
 }
