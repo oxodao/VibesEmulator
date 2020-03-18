@@ -108,22 +108,22 @@ func GetContactsForUser(prv *services.Provider, uid uint) ([]models.Contact, err
 	contacts := []models.Contact{}
 
 	rows, err := prv.DB.Queryx(`SELECT 	IS_FRIENDLY, FRIEND_LEVEL, PROGRESS,
-										INITIATOR.ID, INITIATOR.LAST_ACTION, INITIATOR.FIRSTNAME, INITIATOR.USERNAME, INITIATOR.GENDER, INITIATOR.COUNTRY, INITIATOR.AGE, INITIATOR.PICTURE, INITIATOR.LANG,
-										FRIEND.ID, FRIEND.LAST_ACTION, FRIEND.FIRSTNAME, FRIEND.USERNAME, FRIEND.GENDER, FRIEND.COUNTRY, FRIEND.AGE, FRIEND.PICTURE, FRIEND.LANG
+										i.ID as "INITIATOR.ID", i.LAST_ACTION as "INITIATOR.LAST_ACTION", i.FIRSTNAME as "INITIATOR.FIRSTNAME", i.USERNAME as "INITIATOR.USERNAME", i.GENDER as "INITIATOR.GENDER", i.COUNTRY as "INITIATOR.COUNTRY", i.AGE as "INITIATOR.AGE", i.PICTURE as "INITIATOR.PICTURE", i.LANG as "INITIATOR.LANG",
+										f.ID as "FRIEND.ID", f.LAST_ACTION as "FRIEND.LAST_ACTION", f.FIRSTNAME as "FRIEND.FIRSTNAME", f.USERNAME as "FRIEND.USERNAME", f.GENDER as "FRIEND.GENDER", f.COUNTRY as "FRIEND.COUNTRY", f.AGE as "FRIEND.AGE", f.PICTURE as "FRIEND.PICTURE", f.LANG as "FRIEND.LANG"
 								FROM APP_CONTACTS c
-									LEFT JOIN APP_USER INITIATOR ON INITIATOR.ID = c.INITIATOR
-									LEFT JOIN APP_USER FRIEND ON FRIEND.ID = c.FRIEND
-								WHERE INITIATOR.ID = $1 OR FRIEND.ID = $1`, uid)
+									LEFT JOIN APP_USER i ON i.ID = c.INITIATOR
+									LEFT JOIN APP_USER f ON f.ID = c.FRIEND
+								WHERE i.ID = $1 OR f.ID = $1`, uid)
 	if err != nil {
 		return contacts, err
 	}
 
+	var contact models.Contact = models.Contact{}
 	for rows.Next() {
-		var contact models.Contact
 		rows.StructScan(&contact)
-
 		contact.SetOtherUserID(uid)
-		fmt.Printf("\t- %v / %v\n", contact.UserOne.Username, contact.UserTwo.Username)
+
+		contact.User = contact.User.GetUserWithPictureURL()
 
 		contacts = append(contacts, contact)
 	}
