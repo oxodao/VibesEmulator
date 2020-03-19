@@ -35,7 +35,8 @@ func main() {
 	//core.HandleFunc("/getPotentialContacts", middlewares.CheckUserMiddleware(prv, routes.GetPotentialContactsRoute(prv)))
 
 	messenger := r.PathPrefix("/messenger/").Subrouter()
-	messenger.HandleFunc("/getMessages", middlewares.CheckUserMiddleware(prv, routes.GetMessages(prv)))
+	messenger.HandleFunc("/getMessages", middlewares.CheckUserMiddleware(prv, routes.GetMessagesRoute(prv)))
+	messenger.HandleFunc("/addMessage", middlewares.CheckUserMiddleware(prv, routes.SendMessageRoute(prv)))
 
 	settings := r.PathPrefix("/settings/").Subrouter()
 	settings.HandleFunc("/getAll", middlewares.CheckUserMiddleware(prv, routes.GetAllSettingsRoute(prv)))

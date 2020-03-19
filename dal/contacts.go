@@ -67,7 +67,6 @@ func CreateOrFetchContactByName(prv *services.Provider, user *models.User, usern
 		rows.StructScan(&contact)
 
 		contact.SetOtherUser(user)
-
 		return contact, nil
 	}
 

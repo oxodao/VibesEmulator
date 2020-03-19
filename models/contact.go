@@ -1,20 +1,19 @@
 package models
 
-import "time"
-
 // Contact represent a friend
 type Contact struct {
-	Distance           int       `json:"distance"`
-	IsFriendly         bool      `json:"isFriendly" db:"IS_FRIENDLY"`
-	Level              int       `json:"level" db:"FRIEND_LEVEL"`
-	Playable           bool      `json:"playable" db:"-"`
-	Progress           int       `json:"progress" db:"PROGRESS"`
-	LastAction         time.Time `db:"LAST_ACTION"`
-	UnreadMessageCount int       `json:"unreadMessageCount" db:"-"`
-	User               User      `json:"user" db:"-"`
-	Turn               int       `json:"-" db:"TURN"`
-	UserOne            User      `json:"-" db:"INITIATOR"`
-	UserTwo            User      `json:"-" db:"FRIEND"`
+	ID                 int  `json:"id"`
+	Distance           int  `json:"distance"`
+	IsFriendly         bool `json:"isFriendly" db:"IS_FRIENDLY"`
+	Level              int  `json:"level" db:"FRIEND_LEVEL"`
+	Playable           bool `json:"playable" db:"-"`
+	Progress           int  `json:"progress" db:"PROGRESS"`
+	LastAction         uint `db:"LAST_ACTION"`
+	UnreadMessageCount int  `json:"unreadMessageCount" db:"-"`
+	User               User `json:"user" db:"-"`
+	Turn               int  `json:"-" db:"TURN"`
+	UserOne            User `json:"-" db:"INITIATOR"`
+	UserTwo            User `json:"-" db:"FRIEND"`
 }
 
 // SetOtherUser sets the user to the contact's user
