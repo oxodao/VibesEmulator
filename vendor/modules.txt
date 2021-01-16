@@ -1,14 +1,14 @@
-# github.com/gorilla/handlers v1.4.2
+# github.com/go-sql-driver/mysql v1.4.1
 ## explicit
 # github.com/gorilla/mux v1.7.3
 ## explicit
 github.com/gorilla/mux
-# github.com/jinzhu/gorm v1.9.12
-## explicit
 # github.com/jmoiron/sqlx v1.2.0
 ## explicit
 github.com/jmoiron/sqlx
 github.com/jmoiron/sqlx/reflectx
+# github.com/lib/pq v1.1.1
+## explicit
 # github.com/matoous/go-nanoid v1.5.0
 ## explicit
 github.com/matoous/go-nanoid
@@ -22,3 +22,5 @@ golang.org/x/crypto/blake2b
 # golang.org/x/sys v0.0.0-20190412213103-97732733099d
 golang.org/x/sys/cpu
 golang.org/x/sys/unix
+# google.golang.org/appengine v1.4.0
+## explicit

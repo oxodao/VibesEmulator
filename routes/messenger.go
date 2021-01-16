@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 
@@ -12,14 +13,18 @@ import (
 	"github.com/oxodao/vibes/services"
 )
 
+func Messenger(prv *services.Provider, r *mux.Router) {
+	r.HandleFunc("/getMessages", middlewares.CheckUserMiddleware(prv, getMessagesRoute(prv)))
+	r.HandleFunc("/addMessage", middlewares.CheckUserMiddleware(prv, sendMessageRoute(prv)))
+}
+
 type getMessageResponse struct {
 	ButtonState string           `json:"buttonState"`
 	FacebookID  string           `json:"facebookId"`
 	Messages    []models.Message `json:"messages"`
 }
 
-// GetMessagesRoute blalba
-func GetMessagesRoute(prv *services.Provider) http.HandlerFunc {
+func getMessagesRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		u, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
@@ -49,8 +54,7 @@ func GetMessagesRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// SendMessageRoute blabla
-func SendMessageRoute(prv *services.Provider) http.HandlerFunc {
+func sendMessageRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		u, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {

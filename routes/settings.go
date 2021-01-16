@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 
@@ -13,8 +14,20 @@ import (
 	"github.com/oxodao/vibes/utils"
 )
 
-// SetPushTokenRoute blabla
-func SetPushTokenRoute(prv *services.Provider) http.HandlerFunc {
+func Settings(prv *services.Provider, r *mux.Router) {
+	r.HandleFunc("/getAll", middlewares.CheckUserMiddleware(prv, getAllSettingsRoute(prv)))
+	r.HandleFunc("/setAge", middlewares.CheckUserMiddleware(prv, setAgeRoute(prv)))
+	r.HandleFunc("/setAgeRange", middlewares.CheckUserMiddleware(prv, setAgeRangeRoute(prv)))
+	r.HandleFunc("/setFirstName", middlewares.CheckUserMiddleware(prv, setFirstNameRoute(prv)))
+	r.HandleFunc("/setGameLanguage", middlewares.CheckUserMiddleware(prv, setGameLanguageRoute(prv)))
+	r.HandleFunc("/setGender", middlewares.CheckUserMiddleware(prv, setGenderRoute(prv)))
+	r.HandleFunc("/setGenderWanted", middlewares.CheckUserMiddleware(prv, setGenderWantedRoute(prv)))
+	r.HandleFunc("/setPicture", middlewares.CheckUserMiddleware(prv, setPictureRoute(prv)))
+	r.HandleFunc("/setPushToken", middlewares.CheckUserMiddleware(prv, setPushTokenRoute(prv)))
+	r.HandleFunc("/setXRatedEnabled", middlewares.CheckUserMiddleware(prv, setXRatedEnabledRoute(prv)))
+}
+
+func setPushTokenRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Should return a user
 
@@ -23,8 +36,7 @@ func SetPushTokenRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// GetAllSettingsRoute blabla
-func GetAllSettingsRoute(prv *services.Provider) http.HandlerFunc {
+func getAllSettingsRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
@@ -50,8 +62,7 @@ func GetAllSettingsRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-//SetAgeRangeRoute blabla
-func SetAgeRangeRoute(prv *services.Provider) http.HandlerFunc {
+func setAgeRangeRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
@@ -81,8 +92,7 @@ func SetAgeRangeRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-//SetAgeRoute blabla
-func SetAgeRoute(prv *services.Provider) http.HandlerFunc {
+func setAgeRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
@@ -110,8 +120,7 @@ func SetAgeRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-//SetFirstNameRoute blabla
-func SetFirstNameRoute(prv *services.Provider) http.HandlerFunc {
+func setFirstNameRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
@@ -135,8 +144,7 @@ func SetFirstNameRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-//SetGenderRoute blabla
-func SetGenderRoute(prv *services.Provider) http.HandlerFunc {
+func setGenderRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
@@ -164,8 +172,7 @@ func SetGenderRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-//SetGenderWantedRoute blabla
-func SetGenderWantedRoute(prv *services.Provider) http.HandlerFunc {
+func setGenderWantedRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
@@ -194,8 +201,7 @@ func SetGenderWantedRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// SetXRatedEnabledRoute blabla
-func SetXRatedEnabledRoute(prv *services.Provider) http.HandlerFunc {
+func setXRatedEnabledRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
@@ -224,8 +230,7 @@ func SetXRatedEnabledRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// SetGameLanguageRoute blabla
-func SetGameLanguageRoute(prv *services.Provider) http.HandlerFunc {
+func setGameLanguageRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
@@ -248,8 +253,7 @@ func SetGameLanguageRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// SetPictureRoute uploads a picture @TODO: Check if the received picture is not in form of https://vibes.oxodao.fr/pictures/PICT
-func SetPictureRoute(prv *services.Provider) http.HandlerFunc {
+func setPictureRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {

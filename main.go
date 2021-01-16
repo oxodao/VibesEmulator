@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/oxodao/vibes/middlewares"
 	"github.com/oxodao/vibes/routes"
 	"github.com/oxodao/vibes/services"
 
@@ -22,33 +21,11 @@ func main() {
 
 	r := mux.NewRouter()
 
-	auth := r.PathPrefix("/auth/").Subrouter()
-	auth.HandleFunc("/register", routes.RegisterRoute(prv))
-	auth.HandleFunc("/login", routes.LoginRoute(prv))
-	auth.HandleFunc("/logout", routes.LogoutRoute(prv))
+	routes.Auth(prv, r.PathPrefix("/auth/").Subrouter())
+	routes.Core(prv, r.PathPrefix("/core/").Subrouter())
+	routes.Messenger(prv, r.PathPrefix("/messenger/").Subrouter())
+	routes.Settings(prv, r.PathPrefix("/settings/").Subrouter())
 
-	core := r.PathPrefix("/core/").Subrouter()
-	core.HandleFunc("/uploadPicture", routes.UploadPictureRoute(prv))
-	core.HandleFunc("/getContacts", middlewares.CheckUserMiddleware(prv, routes.GetContactsRoute(prv)))
-	core.HandleFunc("/createContactWithUsername", middlewares.CheckUserMiddleware(prv, routes.CreateContactWithUsernameRoute(prv)))
-	core.HandleFunc("/createContactRandom", middlewares.CheckUserMiddleware(prv, routes.CreateContactRandomRoute(prv)))
-	//core.HandleFunc("/getPotentialContacts", middlewares.CheckUserMiddleware(prv, routes.GetPotentialContactsRoute(prv)))
-
-	messenger := r.PathPrefix("/messenger/").Subrouter()
-	messenger.HandleFunc("/getMessages", middlewares.CheckUserMiddleware(prv, routes.GetMessagesRoute(prv)))
-	messenger.HandleFunc("/addMessage", middlewares.CheckUserMiddleware(prv, routes.SendMessageRoute(prv)))
-
-	settings := r.PathPrefix("/settings/").Subrouter()
-	settings.HandleFunc("/getAll", middlewares.CheckUserMiddleware(prv, routes.GetAllSettingsRoute(prv)))
-	settings.HandleFunc("/setAge", middlewares.CheckUserMiddleware(prv, routes.SetAgeRoute(prv)))
-	settings.HandleFunc("/setAgeRange", middlewares.CheckUserMiddleware(prv, routes.SetAgeRangeRoute(prv)))
-	settings.HandleFunc("/setFirstName", middlewares.CheckUserMiddleware(prv, routes.SetFirstNameRoute(prv)))
-	settings.HandleFunc("/setGameLanguage", middlewares.CheckUserMiddleware(prv, routes.SetGameLanguageRoute(prv)))
-	settings.HandleFunc("/setGender", middlewares.CheckUserMiddleware(prv, routes.SetGenderRoute(prv)))
-	settings.HandleFunc("/setGenderWanted", middlewares.CheckUserMiddleware(prv, routes.SetGenderWantedRoute(prv)))
-	settings.HandleFunc("/setPicture", middlewares.CheckUserMiddleware(prv, routes.SetPictureRoute(prv)))
-	settings.HandleFunc("/setPushToken", middlewares.CheckUserMiddleware(prv, routes.SetPushTokenRoute(prv)))
-	settings.HandleFunc("/setXRatedEnabled", middlewares.CheckUserMiddleware(prv, routes.SetXRatedEnabledRoute(prv)))
 
 	r.PathPrefix("/pictures/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Access on " + r.RequestURI)
@@ -62,7 +39,6 @@ func main() {
 	srv := &http.Server{
 		Handler: r,
 		Addr:    "127.0.0.1:4568",
-		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

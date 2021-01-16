@@ -18,7 +18,10 @@ func SetPicture(prv *services.Provider, file multipart.File) (string, error) {
 		return "", err
 	}
 
-	io.Copy(f, file)
+	_, err = io.Copy(f, file)
+	if err != nil {
+		return "", err
+	}
 
 	// Creating all the size of pictures
 	// It is probably better to store it in all format than resizing it each call

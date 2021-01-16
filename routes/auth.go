@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
 	"time"
@@ -13,8 +14,13 @@ import (
 	"github.com/oxodao/vibes/services"
 )
 
-// RegisterRoute is the registration route...
-func RegisterRoute(prv *services.Provider) http.HandlerFunc {
+func Auth(prv *services.Provider, r *mux.Router) {
+	r.HandleFunc("/register", registerRoute(prv))
+	r.HandleFunc("/login", loginRoute(prv))
+	r.HandleFunc("/logout", logoutRoute(prv))
+}
+
+func registerRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("New user !")
 		q := r.URL.Query()
@@ -92,8 +98,7 @@ func RegisterRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// LoginRoute blabla
-func LoginRoute(prv *services.Provider) http.HandlerFunc {
+func loginRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		username := r.URL.Query().Get("username")
 		password := r.URL.Query().Get("password")
@@ -126,8 +131,7 @@ func LoginRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// LogoutRoute blabla
-func LogoutRoute(prv *services.Provider) http.HandlerFunc {
+func logoutRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		u, ok := r.Context().Value(middlewares.UserContext).(*models.User)

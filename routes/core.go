@@ -3,6 +3,7 @@ package routes
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
 
 	"github.com/oxodao/vibes/dal"
@@ -12,8 +13,15 @@ import (
 	"github.com/oxodao/vibes/utils"
 )
 
-// UploadPictureRoute uploads a picture
-func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
+func Core(prv *services.Provider, r *mux.Router) {
+	r.HandleFunc("/uploadPicture", uploadPictureRoute(prv))
+	r.HandleFunc("/getContacts", middlewares.CheckUserMiddleware(prv, getContactsRoute(prv)))
+	r.HandleFunc("/createContactWithUsername", middlewares.CheckUserMiddleware(prv, createContactWithUsernameRoute(prv)))
+	r.HandleFunc("/createContactRandom", middlewares.CheckUserMiddleware(prv, createContactRandomRoute(prv)))
+	//r.HandleFunc("/getPotentialContacts", middlewares.CheckUserMiddleware(prv, routes.GetPotentialContactsRoute(prv)))
+}
+
+func uploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// @TODO: Store in DB, if not affected to a user after 5 minutes => Remove it
 		// If affected => remove from DB
@@ -58,8 +66,8 @@ func UploadPictureRoute(prv *services.Provider) http.HandlerFunc {
    private String userGameLanguage;
 */
 
-// GetContactsRoute returns the friends + a tinder-like list of people
-func GetContactsRoute(prv *services.Provider) http.HandlerFunc {
+// getContactsRoute returns the friends + a tinder-like list of people
+func getContactsRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		u, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
@@ -110,8 +118,7 @@ func GetContactsRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// CreateContactRandomRoute blabla
-func CreateContactRandomRoute(prv *services.Provider) http.HandlerFunc {
+func createContactRandomRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		_, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
@@ -134,8 +141,7 @@ func CreateContactRandomRoute(prv *services.Provider) http.HandlerFunc {
 	}
 }
 
-// CreateContactWithUsernameRoute blabla
-func CreateContactWithUsernameRoute(prv *services.Provider) http.HandlerFunc {
+func createContactWithUsernameRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		u, ok := r.Context().Value(middlewares.UserContext).(*models.User)
 		if !ok {
