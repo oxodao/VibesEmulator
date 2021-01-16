@@ -22,7 +22,7 @@ func (c *Contact) SetOtherUser(currUser *User) {
 }
 
 // SetOtherUserID sets the user to the contact's user
-func (c *Contact) SetOtherUserID(uid uint) {
+func (c *Contact) SetOtherUserID(uid uint64) {
 	if c.UserOne.ID == uid {
 		c.User = c.UserTwo
 		c.Playable = c.Turn == 1

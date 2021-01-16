@@ -36,7 +36,7 @@ func FindUserByUsername(prv *services.Provider, name string) (*models.User, erro
 }
 
 // SetLatestToken blabla
-func SetLatestToken(prv *services.Provider, uid uint, token string) error {
+func SetLatestToken(prv *services.Provider, uid uint64, token string) error {
 	_, err := prv.DB.Exec("UPDATE APP_USER SET LATEST_TOKEN = ? WHERE ID = ?", token, uid)
 	return err
 }

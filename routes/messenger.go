@@ -45,7 +45,8 @@ func getMessagesRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		rsp, _ := json.Marshal(getMessageResponse{
-			ButtonState: "WAIT",
+			//ButtonState: "WAIT",
+			ButtonState: "PLAY",
 			Messages:    msgs,
 		})
 

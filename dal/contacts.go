@@ -9,7 +9,7 @@ import (
 
 // GenerateRandomContacts finds 5 random people to add to your suggestions.
 // This should also saves them to get them five same until
-func GenerateRandomContacts(prv *services.Provider, uid uint) ([]models.User, error) {
+func GenerateRandomContacts(prv *services.Provider, uid uint64) ([]models.User, error) {
 	rq := `
 		SELECT *
 		FROM APP_USER
@@ -103,7 +103,7 @@ func CreateOrFetchContactByName(prv *services.Provider, user *models.User, usern
 }
 
 // GetContactsForUser blabla
-func GetContactsForUser(prv *services.Provider, uid uint) ([]models.Contact, error) {
+func GetContactsForUser(prv *services.Provider, uid uint64) ([]models.Contact, error) {
 	contacts := []models.Contact{}
 
 	rows, err := prv.DB.Queryx(`SELECT 	IS_FRIENDLY, FRIEND_LEVEL, PROGRESS,
@@ -117,7 +117,7 @@ func GetContactsForUser(prv *services.Provider, uid uint) ([]models.Contact, err
 		return contacts, err
 	}
 
-	var contact models.Contact = models.Contact{}
+	contact := models.Contact{}
 	for rows.Next() {
 		rows.StructScan(&contact)
 		contact.SetOtherUserID(uid)
@@ -130,4 +130,30 @@ func GetContactsForUser(prv *services.Provider, uid uint) ([]models.Contact, err
 	rows.Close()
 
 	return contacts, nil
+}
+
+func GetContactByPartnerID(prv *services.Provider, uid, uidFriend uint64) (models.Contact, error) {
+	contact := models.Contact{}
+
+	row := prv.DB.QueryRowx(`SELECT IS_FRIENDLY, FRIEND_LEVEL, PROGRESS,
+									      i.ID as "INITIATOR.ID", i.LAST_ACTION as "INITIATOR.LAST_ACTION", i.FIRSTNAME as "INITIATOR.FIRSTNAME", i.USERNAME as "INITIATOR.USERNAME", i.GENDER as "INITIATOR.GENDER", i.COUNTRY as "INITIATOR.COUNTRY", i.AGE as "INITIATOR.AGE", i.PICTURE as "INITIATOR.PICTURE", i.LANG as "INITIATOR.LANG",
+										  f.ID as "FRIEND.ID", f.LAST_ACTION as "FRIEND.LAST_ACTION", f.FIRSTNAME as "FRIEND.FIRSTNAME", f.USERNAME as "FRIEND.USERNAME", f.GENDER as "FRIEND.GENDER", f.COUNTRY as "FRIEND.COUNTRY", f.AGE as "FRIEND.AGE", f.PICTURE as "FRIEND.PICTURE", f.LANG as "FRIEND.LANG"
+								FROM APP_CONTACTS c
+									LEFT JOIN APP_USER i ON i.ID = c.INITIATOR
+									LEFT JOIN APP_USER f ON f.ID = c.FRIEND
+								WHERE (f.ID = $1 AND i.ID = $2) OR (f.ID = $2 AND i.ID = $1)`, uid, uidFriend)
+
+	if row.Err() != nil {
+		return contact, row.Err()
+	}
+
+	err := row.StructScan(&contact)
+	if err != nil {
+		return contact, err
+	}
+
+	contact.SetOtherUserID(uid)
+	contact.User = contact.User.GetUserWithPictureURL(prv.Config.WebrootURL)
+
+	return contact, err
 }

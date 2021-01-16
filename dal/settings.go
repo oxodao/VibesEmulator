@@ -7,7 +7,7 @@ import "github.com/oxodao/vibes/services"
 **/
 
 // UpdateAge blabla
-func UpdateAge(prv *services.Provider, uid uint, age int, ageFrom int, ageTo int) {
+func UpdateAge(prv *services.Provider, uid uint64, age int, ageFrom int, ageTo int) {
 	prv.DB.Exec(`
 		UPDATE APP_USER
 		SET
@@ -19,12 +19,12 @@ func UpdateAge(prv *services.Provider, uid uint, age int, ageFrom int, ageTo int
 }
 
 // UpdateFirstname blabla
-func UpdateFirstname(prv *services.Provider, uid uint, name string) {
+func UpdateFirstname(prv *services.Provider, uid uint64, name string) {
 	prv.DB.Exec("UPDATE APP_USER SET FIRSTNAME = ? WHERE ID = ?", name, uid)
 }
 
 // UpdateGender blabla
-func UpdateGender(prv *services.Provider, uid uint, gender int, genderWanted int) {
+func UpdateGender(prv *services.Provider, uid uint64, gender int, genderWanted int) {
 	prv.DB.Exec(`
 		UPDATE APP_USER
 		SET
@@ -35,16 +35,16 @@ func UpdateGender(prv *services.Provider, uid uint, gender int, genderWanted int
 }
 
 // UpdateAdult blabla
-func UpdateAdult(prv *services.Provider, uid uint, adult bool) {
+func UpdateAdult(prv *services.Provider, uid uint64, adult bool) {
 	prv.DB.Exec("UPDATE APP_USER SET ADULT = ? WHERE ID = ?", adult, uid)
 }
 
 // UpdateLanguage blabla
-func UpdateLanguage(prv *services.Provider, uid uint, lang string) {
+func UpdateLanguage(prv *services.Provider, uid uint64, lang string) {
 	prv.DB.Exec("UPDATE APP_USER SET LANG = ? WHERE ID = ?", lang, uid)
 }
 
 // UpdatePicture blabla
-func UpdatePicture(prv *services.Provider, uid uint, pict string) {
+func UpdatePicture(prv *services.Provider, uid uint64, pict string) {
 	prv.DB.Exec("UPDATE APP_USER SET PICTURE = ? WHERE ID = ?", pict, uid)
 }

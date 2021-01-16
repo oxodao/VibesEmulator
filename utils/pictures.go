@@ -31,6 +31,7 @@ func SetPicture(prv *services.Provider, file multipart.File) (string, error) {
 	saveImageAtSize("portrait_medium", rndName)
 	saveImageAtSize("medium", rndName)
 	saveImageAtSize("xxlarge", rndName)
+	saveImageAtSize("large", rndName)
 	saveImageAtSize("small", rndName)
 
 	return rndName, nil

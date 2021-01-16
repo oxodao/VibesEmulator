@@ -7,6 +7,8 @@ import (
 	"github.com/oxodao/vibes/patcher"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -44,12 +46,21 @@ func main() {
 
 	routes.Auth(prv, r.PathPrefix("/auth/").Subrouter())
 	routes.Core(prv, r.PathPrefix("/core/").Subrouter())
+	routes.Game(prv, r.PathPrefix("/game/").Subrouter())
 	routes.Messenger(prv, r.PathPrefix("/messenger/").Subrouter())
 	routes.Settings(prv, r.PathPrefix("/settings/").Subrouter())
 
 
+	debug := true
 	r.PathPrefix("/pictures/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Access on " + r.RequestURI)
+		if debug {
+			fmt.Println("Access on " + r.RequestURI)
+			fileName := r.URL.RequestURI()[strings.LastIndex(r.URL.RequestURI(), "/")+1:]
+
+			if _, err := os.Stat("./pictures/" + fileName); os.IsNotExist(err) {
+				fmt.Println(" CAN'T FIND PICTURE SIZE ", fileName)
+			}
+		}
 		http.StripPrefix("/pictures/", http.FileServer(http.Dir("./pictures"))).ServeHTTP(w, r)
 	})
 

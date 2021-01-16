@@ -10,8 +10,8 @@ type Message struct {
 	UserAnswerText    string `json:"userAnswerText" db:"-"`
 	PartnerAnswerText string `json:"partnerAnswerText" db:"-"`
 
-	Sender       uint   `json:"-" db:"SENDER"`
-	Receiver     uint   `json:"-" db:"RECEIVER"`
+	Sender       uint64 `json:"-" db:"SENDER"`
+	Receiver     uint64 `json:"-" db:"RECEIVER"`
 	SenderText   string `json:"-" db:"SENDER_ANSWER_TEXT"`
 	ReceiverText string `json:"-" db:"RECEIVER_ANSWER_TEXT"`
 }

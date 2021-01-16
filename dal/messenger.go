@@ -7,7 +7,11 @@ import (
 	"github.com/oxodao/vibes/services"
 )
 
-// GetUsersMessage blabla
+/**
+ * @TODO: Something's wrong with this
+ * The sender sees the sent message as received and vice versa
+ */
+
 func GetUsersMessage(prv *services.Provider, u *models.User, p uint64) ([]models.Message, error) {
 	rows, err := prv.DB.Queryx(`
 			SELECT m.ID, m.CREATED_AT, m.TYPE, m.CONTENT, m.SENDER_ANSWER_TEXT, m.RECEIVER_ANSWER_TEXT,
@@ -40,8 +44,7 @@ func GetUsersMessage(prv *services.Provider, u *models.User, p uint64) ([]models
 	return messages, nil
 }
 
-// SendMessage blabla
-func SendMessage(prv *services.Provider, from uint, to uint64, message string, msgType string, senderAnswerText string, receiverAnswerText string) (models.Message, error) {
+func SendMessage(prv *services.Provider, from uint64, to uint64, message string, msgType string, senderAnswerText string, receiverAnswerText string) (models.Message, error) {
 	inserted, err := prv.DB.Exec(`INSERT INTO 	APP_MESSENGER (
 										SENDER,
 										RECEIVER,

@@ -8,7 +8,7 @@ package models
 
 // User Represent a user
 type User struct {
-	ID           uint   `json:"id" db:"ID"`
+	ID           uint64 `json:"id" db:"ID"`
 	CreatedAt    uint   `json:"-" db:"CREATED_AT"`
 	LastAction   int64  `json:"lastAction" db:"LAST_ACTION"`
 	FirstName    string `json:"name" db:"FIRSTNAME"`
@@ -31,6 +31,6 @@ type User struct {
 // This should be removed and translated as a DTO I think
 func (u *User) GetUserWithPictureURL(webroot string) User {
 	// SHOULD ABSOLUTELY NOT BE SAVED TO THE DB
-	u.Picture = webroot+"/pictures/" + u.Picture
+	u.Picture = webroot + "/pictures/" + u.Picture
 	return *u
 }
