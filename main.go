@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"github.com/oxodao/vibes/patcher"
 	"log"
 	"net/http"
 	"time"
@@ -14,6 +16,20 @@ import (
 )
 
 func main() {
+	patchFlag := flag.String("path", "", "APK to patch")
+	newURLFlag := flag.String("url", "", "New URL for the API")
+
+	flag.Parse()
+
+	if len(*patchFlag) > 0 && len(*newURLFlag) > 0 {
+		patcher.Patcher(*patchFlag, *newURLFlag)
+		return
+	} else if len(*patchFlag) > 0 || len(*newURLFlag) > 0 {
+		fmt.Println("Vibes APK Patcher")
+		fmt.Println("In order to patch the APK you must BOTH give the -path <APK Path> and -url <new api url> arguments")
+
+		return
+	}
 
 	fmt.Println("Vibes API - Indev")
 

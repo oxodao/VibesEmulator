@@ -6,6 +6,16 @@ The goal of this project is not to build a fully featured software but mainly a 
 
 This uses sqlite as a local storage, will probably be migrated to Postgresql (With a docker-compose given to easy start).
 
+## Patching the APK
+
+This emulator includes an easy way to patch the APK.
+
+Given the fact you have apktool, keytool and jarsigner installed, the following command will automatically patch & sign the APK with the given API url.
+
+```
+$ ./vibesemulator -path APK/the_test.apk -url http://192.168.1.10
+```
+
 ## Tools used
 
 With these few software you can get pretty far along (That's how I made this whole server)
