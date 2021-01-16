@@ -29,9 +29,8 @@ type User struct {
 
 // GetUserWithPictureURL replaces the Picture field with a full link to the picture. Should not be saved in DB.
 // This should be removed and translated as a DTO I think
-func (u *User) GetUserWithPictureURL() User {
+func (u *User) GetUserWithPictureURL(webroot string) User {
 	// SHOULD ABSOLUTELY NOT BE SAVED TO THE DB
-	// If it is saved, that's maybe gorm's fault when updating the entity (If directly retreived from client)
-	u.Picture = "https://vibes.oxodao.fr/pictures/" + u.Picture
+	u.Picture = webroot+"/pictures/" + u.Picture
 	return *u
 }

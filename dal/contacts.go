@@ -84,8 +84,8 @@ func CreateOrFetchContactByName(prv *services.Provider, user *models.User, usern
 		Distance:   1,
 		IsFriendly: true,
 		Playable:   true,
-		UserOne:    (*user).GetUserWithPictureURL(),
-		UserTwo:    user2.GetUserWithPictureURL(),
+		UserOne:    (*user).GetUserWithPictureURL(prv.Config.WebrootURL),
+		UserTwo:    user2.GetUserWithPictureURL(prv.Config.WebrootURL),
 		Turn:       1,
 	}
 
@@ -122,7 +122,7 @@ func GetContactsForUser(prv *services.Provider, uid uint) ([]models.Contact, err
 		rows.StructScan(&contact)
 		contact.SetOtherUserID(uid)
 
-		contact.User = contact.User.GetUserWithPictureURL()
+		contact.User = contact.User.GetUserWithPictureURL(prv.Config.WebrootURL)
 
 		contacts = append(contacts, contact)
 	}

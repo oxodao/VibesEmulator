@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/oxodao/vibes/config"
 	"github.com/oxodao/vibes/patcher"
 	"log"
 	"net/http"
@@ -18,7 +19,6 @@ import (
 func main() {
 	patchFlag := flag.String("path", "", "APK to patch")
 	newURLFlag := flag.String("url", "", "New URL for the API")
-
 	flag.Parse()
 
 	if len(*patchFlag) > 0 && len(*newURLFlag) > 0 {
@@ -33,7 +33,12 @@ func main() {
 
 	fmt.Println("Vibes API - Indev")
 
-	prv := services.NewProvider()
+	cfg, err := config.Load()
+	if err != nil {
+		panic(err)
+	}
+
+	prv := services.NewProvider(cfg)
 
 	r := mux.NewRouter()
 
@@ -54,11 +59,12 @@ func main() {
 
 	srv := &http.Server{
 		Handler: r,
-		Addr:    "127.0.0.1:4568",
+		Addr:    cfg.ListeningAddress,
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
+	fmt.Println("Listening on ", srv.Addr)
 	log.Fatal(srv.ListenAndServe())
 
 }

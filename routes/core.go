@@ -25,7 +25,6 @@ func uploadPictureRoute(prv *services.Provider) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// @TODO: Store in DB, if not affected to a user after 5 minutes => Remove it
 		// If affected => remove from DB
-		fmt.Println("Receiving a picture !")
 		r.ParseMultipartForm(32 << 20)
 
 		file, _, err := r.FormFile("picture")
@@ -83,10 +82,10 @@ func getContactsRoute(prv *services.Provider) http.HandlerFunc {
 			//??
 		}
 
-		var randContacts []models.Contact = make([]models.Contact, len(randUsers))
+		var randContacts = make([]models.Contact, len(randUsers))
 		for i := 0; i < len(randUsers); i++ {
 			randContacts[i] = models.Contact{
-				User: randUsers[i].GetUserWithPictureURL(),
+				User: randUsers[i].GetUserWithPictureURL(prv.Config.WebrootURL),
 			}
 		}
 

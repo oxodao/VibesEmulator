@@ -13,6 +13,8 @@ import (
 func SetPicture(prv *services.Provider, file multipart.File) (string, error) {
 	rndName := prv.GenerateUID(20)
 
+	os.Mkdir("pictures", os.ModePerm)
+
 	f, err := os.OpenFile("./pictures/"+rndName+".jpg", os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		return "", err

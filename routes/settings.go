@@ -50,7 +50,7 @@ func getAllSettingsRoute(prv *services.Provider) http.HandlerFunc {
 			User              models.User `json:"user"`
 		}{
 			AvailableLanguage: []string{"fr"},
-			User:              user.GetUserWithPictureURL(),
+			User:              user.GetUserWithPictureURL(prv.Config.WebrootURL),
 		})
 
 		if err != nil {
@@ -82,7 +82,7 @@ func setAgeRangeRoute(prv *services.Provider) http.HandlerFunc {
 		user.AgeTo = ageTo
 		dal.UpdateAge(prv, user.ID, -1, ageFrom, ageTo)
 
-		userRsp, err := json.Marshal(user.GetUserWithPictureURL())
+		userRsp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -110,7 +110,7 @@ func setAgeRoute(prv *services.Provider) http.HandlerFunc {
 		user.Age = age
 		dal.UpdateAge(prv, user.ID, age, -1, -1)
 
-		userRsp, err := json.Marshal(user.GetUserWithPictureURL())
+		userRsp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -134,7 +134,7 @@ func setFirstNameRoute(prv *services.Provider) http.HandlerFunc {
 		user.FirstName = firstname
 		dal.UpdateFirstname(prv, user.ID, firstname)
 
-		userRsp, err := json.Marshal(user.GetUserWithPictureURL())
+		userRsp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -162,7 +162,7 @@ func setGenderRoute(prv *services.Provider) http.HandlerFunc {
 		user.Gender = gender
 		dal.UpdateGender(prv, user.ID, gender, -1)
 
-		userRsp, err := json.Marshal(user.GetUserWithPictureURL())
+		userRsp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -191,7 +191,7 @@ func setGenderWantedRoute(prv *services.Provider) http.HandlerFunc {
 
 		dal.UpdateGender(prv, user.ID, -1, gender)
 
-		userRsp, err := json.Marshal(user.GetUserWithPictureURL())
+		userRsp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
@@ -219,7 +219,7 @@ func setXRatedEnabledRoute(prv *services.Provider) http.HandlerFunc {
 		}
 		dal.UpdateAdult(prv, user.ID, user.IsAdult)
 
-		resp, err := json.Marshal(user.GetUserWithPictureURL())
+		resp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -242,7 +242,7 @@ func setGameLanguageRoute(prv *services.Provider) http.HandlerFunc {
 		user.Language = r.URL.Query().Get("gameLanguage")
 		dal.UpdateLanguage(prv, user.ID, user.Language)
 
-		resp, err := json.Marshal(user.GetUserWithPictureURL())
+		resp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -279,7 +279,7 @@ func setPictureRoute(prv *services.Provider) http.HandlerFunc {
 
 		dal.UpdatePicture(prv, user.ID, rndName)
 
-		uploadResponse, err := json.Marshal(user.GetUserWithPictureURL())
+		uploadResponse, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			return

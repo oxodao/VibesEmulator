@@ -85,7 +85,7 @@ func registerRoute(prv *services.Provider) http.HandlerFunc {
 			User     models.User `json:"user"`
 			Password string      `json:"password"`
 		}{
-			User:     u.GetUserWithPictureURL(),
+			User:     u.GetUserWithPictureURL(prv.Config.WebrootURL),
 			Password: pwd,
 		})
 

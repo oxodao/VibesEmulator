@@ -6,6 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/oxodao/vibes/config"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
@@ -15,12 +16,13 @@ import (
 
 // Provider is a provider
 type Provider struct {
+	Config      *config.Config
 	DB          *sqlx.DB
 	ArgonParams *ArgonParams
 }
 
 // NewProvider returns an instance of Provider
-func NewProvider() *Provider {
+func NewProvider(cfg *config.Config) *Provider {
 	db, err := sqlx.Connect("sqlite3", "./the_test.db")
 	if err != nil {
 		panic("Failed to connect database")
@@ -35,6 +37,7 @@ func NewProvider() *Provider {
 	}
 
 	return &Provider{
+		Config: cfg,
 		DB:          db,
 		ArgonParams: argonParams,
 	}
