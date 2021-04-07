@@ -1,14 +1,17 @@
 package dal
 
 import (
+	"github.com/jmoiron/sqlx"
 	"github.com/oxodao/vibes/models"
-	"github.com/oxodao/vibes/services"
 )
 
-// FindUserByToken blabla
-func FindUserByToken(prv *services.Provider, token string) (*models.User, error) {
+type User struct {
+	DB *sqlx.DB
+}
+
+func (usr User) FindUserByToken(token string) (*models.User, error) {
 	var user *models.User = &models.User{}
-	row, err := prv.DB.Queryx("SELECT * FROM APP_USER WHERE LATEST_TOKEN = ?", token)
+	row, err := usr.DB.Queryx("SELECT * FROM APP_USER WHERE LATEST_TOKEN = ?", token)
 	if err != nil {
 		return nil, err
 	}
@@ -20,10 +23,9 @@ func FindUserByToken(prv *services.Provider, token string) (*models.User, error)
 	return user, err
 }
 
-// FindUserByUsername blabla
-func FindUserByUsername(prv *services.Provider, name string) (*models.User, error) {
+func (usr User) FindUserByUsername(name string) (*models.User, error) {
 	var user *models.User = &models.User{}
-	row, err := prv.DB.Queryx("SELECT * FROM APP_USER WHERE LOWER(USERNAME) = LOWER(?)", name)
+	row, err := usr.DB.Queryx("SELECT * FROM APP_USER WHERE LOWER(USERNAME) = LOWER(?)", name)
 	if err != nil {
 		return nil, err
 	}
@@ -35,15 +37,13 @@ func FindUserByUsername(prv *services.Provider, name string) (*models.User, erro
 	return user, err
 }
 
-// SetLatestToken blabla
-func SetLatestToken(prv *services.Provider, uid uint64, token string) error {
-	_, err := prv.DB.Exec("UPDATE APP_USER SET LATEST_TOKEN = ? WHERE ID = ?", token, uid)
+func (usr User) SetLatestToken(uid uint64, token string) error {
+	_, err := usr.DB.Exec("UPDATE APP_USER SET LATEST_TOKEN = ? WHERE ID = ?", token, uid)
 	return err
 }
 
-// RegisterUser blabla
-func RegisterUser(prv *services.Provider, u *models.User) error {
-	_, err := prv.DB.Exec(`
+func (usr User) RegisterUser(u *models.User) error {
+	_, err := usr.DB.Exec(`
 		INSERT INTO APP_USER(
 			FIRSTNAME,
 			PICTURE,

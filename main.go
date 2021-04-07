@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/oxodao/vibes/config"
+	"github.com/oxodao/vibes/fixtures"
 	"github.com/oxodao/vibes/patcher"
 	"log"
 	"net/http"
@@ -19,6 +20,8 @@ import (
 )
 
 func main() {
+	generateDb := flag.Bool("generate-db", false, "Re-generate the database")
+	insertFixtures := flag.Bool("insert-fixtures", false, "Insert fake data in the database")
 	patchFlag := flag.String("path", "", "APK to patch")
 	newURLFlag := flag.String("url", "", "New URL for the API")
 	flag.Parse()
@@ -41,6 +44,14 @@ func main() {
 	}
 
 	prv := services.NewProvider(cfg)
+
+	if *generateDb {
+		fixtures.InitializeDb(prv)
+	}
+
+	if *insertFixtures {
+		fixtures.GenerateFakeData(prv)
+	}
 
 	r := mux.NewRouter()
 

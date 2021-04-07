@@ -2,9 +2,9 @@ package dal
 
 import (
 	"fmt"
+	"github.com/jmoiron/sqlx"
 
 	"github.com/oxodao/vibes/models"
-	"github.com/oxodao/vibes/services"
 )
 
 /**
@@ -12,8 +12,12 @@ import (
  * The sender sees the sent message as received and vice versa
  */
 
-func GetUsersMessage(prv *services.Provider, u *models.User, p uint64) ([]models.Message, error) {
-	rows, err := prv.DB.Queryx(`
+type Messenger struct {
+	DB *sqlx.DB
+}
+
+func (m Messenger) GetUsersMessage(u *models.User, p uint64) ([]models.Message, error) {
+	rows, err := m.DB.Queryx(`
 			SELECT m.ID, m.CREATED_AT, m.TYPE, m.CONTENT, m.SENDER_ANSWER_TEXT, m.RECEIVER_ANSWER_TEXT,
 				   su.ID as "SENDER", ru.ID as "RECEIVER"
 			FROM APP_MESSENGER m
@@ -44,8 +48,8 @@ func GetUsersMessage(prv *services.Provider, u *models.User, p uint64) ([]models
 	return messages, nil
 }
 
-func SendMessage(prv *services.Provider, from uint64, to uint64, message string, msgType string, senderAnswerText string, receiverAnswerText string) (models.Message, error) {
-	inserted, err := prv.DB.Exec(`INSERT INTO 	APP_MESSENGER (
+func (m Messenger) SendMessage(from uint64, to uint64, message string, msgType string, senderAnswerText string, receiverAnswerText string) (models.Message, error) {
+	inserted, err := m.DB.Exec(`INSERT INTO 	APP_MESSENGER (
 										SENDER,
 										RECEIVER,
 										CONTENT,
@@ -63,7 +67,7 @@ func SendMessage(prv *services.Provider, from uint64, to uint64, message string,
 		return models.Message{}, err
 	}
 
-	row := prv.DB.QueryRowx("SELECT * FROM APP_MESSENGER WHERE ID = ?", id)
+	row := m.DB.QueryRowx("SELECT * FROM APP_MESSENGER WHERE ID = ?", id)
 
 	var msg models.Message
 	row.StructScan(&msg)

@@ -32,3 +32,24 @@ func (c *Contact) SetOtherUserID(uid uint64) {
 	}
 
 }
+
+
+func (c Contact) GetTableName() string {
+	return "APP_CONTACTS"
+}
+
+func (c Contact) GetTableCreationScript() string {
+	return `
+		CREATE TABLE APP_CONTACTS (
+			INITIATOR INTEGER,
+			FRIEND INTEGER,
+			IS_FRIENDLY BOOL DEFAULT 1,
+			FRIEND_LEVEL INTEGER DEFAULT 0,
+			TURN INTEGER DEFAULT 1,
+			PROGRESS INTEGER DEFAULT 0,
+			PRIMARY KEY (INITIATOR, FRIEND),
+			FOREIGN KEY(INITIATOR) REFERENCES APP_USER(ID),
+			FOREIGN KEY(FRIEND) REFERENCES APP_USER(ID)
+		);
+`
+}

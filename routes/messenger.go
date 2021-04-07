@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/oxodao/vibes/dal"
 	"github.com/oxodao/vibes/middlewares"
 	"github.com/oxodao/vibes/models"
 	"github.com/oxodao/vibes/services"
@@ -39,7 +38,7 @@ func getMessagesRoute(prv *services.Provider) http.HandlerFunc {
 			// ??
 		}
 
-		msgs, err := dal.GetUsersMessage(prv, u, partnerID)
+		msgs, err := prv.Dal.Messenger.GetUsersMessage(u, partnerID)
 		if err != nil {
 			// ??
 		}
@@ -81,7 +80,7 @@ func sendMessageRoute(prv *services.Provider) http.HandlerFunc {
 					return
 				}
 
-				msg, err := dal.SendMessage(prv, u.ID, userID, text, "PLAIN", "", "")
+				msg, err := prv.Dal.Messenger.SendMessage(u.ID, userID, text, "PLAIN", "", "")
 
 				msgJSON, _ := json.Marshal(msg)
 				if err != nil {

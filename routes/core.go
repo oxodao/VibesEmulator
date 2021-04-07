@@ -6,7 +6,6 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 
-	"github.com/oxodao/vibes/dal"
 	"github.com/oxodao/vibes/middlewares"
 	"github.com/oxodao/vibes/models"
 	"github.com/oxodao/vibes/services"
@@ -76,7 +75,7 @@ func getContactsRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		// @TODO: Store them so that we don't have random each time and only refill the list when the user calls this route
-		randUsers, err := dal.GenerateRandomContacts(prv, u.ID)
+		randUsers, err := prv.Dal.Contact.GenerateRandomContacts(u.ID)
 
 		if err != nil {
 			//??
@@ -89,7 +88,7 @@ func getContactsRoute(prv *services.Provider) http.HandlerFunc {
 			}
 		}
 
-		myContacts, err := dal.GetContactsForUser(prv, u.ID)
+		myContacts, err := prv.Dal.Contact.GetContactsForUser(u.ID, prv.Config.WebrootURL)
 		if err != nil {
 			// ??
 		}
@@ -150,7 +149,7 @@ func createContactWithUsernameRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		otherUser := r.URL.Query().Get("username")
-		rndContact, err := dal.CreateOrFetchContactByName(prv, u, otherUser)
+		rndContact, err := prv.Dal.Contact.CreateOrFetchContactByName(u, otherUser, prv.Config.WebrootURL)
 
 		resp, err := json.Marshal(rndContact)
 		if err != nil {

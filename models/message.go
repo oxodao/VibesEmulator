@@ -27,3 +27,25 @@ func (m *Message) SetOtherUser(mainUser *User) {
 		m.PartnerAnswerText = m.SenderText
 	}
 }
+
+
+func (m Message) GetTableName() string {
+	return "APP_MESSENGER"
+}
+
+func (m Message) GetTableCreationScript() string {
+	return `
+		CREATE TABLE APP_MESSENGER (
+			ID INTEGER PRIMARY KEY AUTOINCREMENT,
+			SENDER INTEGER,
+			RECEIVER INTEGER,
+			CONTENT VARCHAR(255),
+			TYPE VARCHAR(10),
+			SENDER_ANSWER_TEXT VARCHAR(255),
+			RECEIVER_ANSWER_TEXT VARCHAR(255),
+			CREATED_AT INTEGER DEFAULT (cast(strftime('%s','now') as int)),
+			FOREIGN KEY(SENDER) REFERENCES APP_USER(ID),
+			FOREIGN KEY(RECEIVER) REFERENCES APP_USER(ID)
+		);
+`
+}

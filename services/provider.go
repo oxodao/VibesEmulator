@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/oxodao/vibes/config"
+	"github.com/oxodao/vibes/dal"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
@@ -18,6 +19,7 @@ import (
 type Provider struct {
 	Config      *config.Config
 	DB          *sqlx.DB
+	Dal         *dal.Dal
 	ArgonParams *ArgonParams
 }
 
@@ -36,9 +38,12 @@ func NewProvider(cfg *config.Config) *Provider {
 		KeyLength:   32,
 	}
 
+	dataAccessLayer := dal.New(db)
+
 	return &Provider{
-		Config: cfg,
+		Config:      cfg,
 		DB:          db,
+		Dal:         &dataAccessLayer,
 		ArgonParams: argonParams,
 	}
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/oxodao/vibes/dal"
 	"github.com/oxodao/vibes/services"
 )
 
@@ -18,7 +17,7 @@ func CheckUserMiddleware(prv *services.Provider, next http.HandlerFunc) http.Han
 			return
 		}
 
-		u, err := dal.FindUserByToken(prv, cookie.Value)
+		u, err := prv.Dal.User.FindUserByToken(cookie.Value)
 		if err != nil {
 			w.WriteHeader(http.StatusForbidden)
 			return

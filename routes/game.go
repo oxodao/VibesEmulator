@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/oxodao/vibes/dal"
 	"github.com/oxodao/vibes/middlewares"
 	"github.com/oxodao/vibes/models"
 	"github.com/oxodao/vibes/services"
@@ -34,7 +33,7 @@ func getData(prv *services.Provider) http.HandlerFunc {
 
 		fmt.Println("Partner: ", partnerID)
 
-		c, err := dal.GetContactByPartnerID(prv, u.ID, partnerID)
+		c, err := prv.Dal.Contact.GetContactByPartnerID(u.ID, partnerID, prv.Config.WebrootURL)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -47,8 +46,8 @@ func getData(prv *services.Provider) http.HandlerFunc {
 					Text: "Toto q0",
 				},
 				Answers: []models.Answer{
-					{ID: 0, Text: "toto1", CommentText: ""},
-					{ID: 1, Text: "toto2", CommentText: ""},
+					{ID: 0, Text: "toto1", CommentText: nil},
+					{ID: 1, Text: "toto2", CommentText: nil},
 				},
 				UserAnswer: nil,
 				PartnerAnswer: nil,

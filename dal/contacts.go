@@ -2,14 +2,18 @@ package dal
 
 import (
 	"fmt"
+	"github.com/jmoiron/sqlx"
 
 	"github.com/oxodao/vibes/models"
-	"github.com/oxodao/vibes/services"
 )
+
+type Contact struct {
+	DB *sqlx.DB
+}
 
 // GenerateRandomContacts finds 5 random people to add to your suggestions.
 // This should also saves them to get them five same until
-func GenerateRandomContacts(prv *services.Provider, uid uint64) ([]models.User, error) {
+func (c Contact) GenerateRandomContacts(uid uint64) ([]models.User, error) {
 	rq := `
 		SELECT *
 		FROM APP_USER
@@ -19,7 +23,7 @@ func GenerateRandomContacts(prv *services.Provider, uid uint64) ([]models.User, 
 	`
 
 	var users []models.User
-	rows, err := prv.DB.Queryx(rq, uid)
+	rows, err := c.DB.Queryx(rq, uid)
 	if err != nil {
 		return users, err
 	}
@@ -40,8 +44,7 @@ func GenerateRandomContacts(prv *services.Provider, uid uint64) ([]models.User, 
 	return users, err
 }
 
-// CreateOrFetchContactByName blabla
-func CreateOrFetchContactByName(prv *services.Provider, user *models.User, username string) (models.Contact, error) {
+func (c Contact) CreateOrFetchContactByName(user *models.User, webroot, username string) (models.Contact, error) {
 	/**
 		@TODO / Missing features:
 			- Calculate the distance
@@ -57,7 +60,7 @@ func CreateOrFetchContactByName(prv *services.Provider, user *models.User, usern
 		WHERE (INITIATOR.ID = $1 OR FRIEND.ID = $1) AND (INITIATOR.ID = $2 OR FRIEND.ID = $2) 
 	`
 
-	rows, err := prv.DB.Queryx(rq, user.ID, username)
+	rows, err := c.DB.Queryx(rq, user.ID, username)
 	if err != nil {
 		return models.Contact{}, err
 	}
@@ -75,7 +78,7 @@ func CreateOrFetchContactByName(prv *services.Provider, user *models.User, usern
 	rq = `SELECT * FROM APP_USER WHERE LOWER(USERNAME) = LOWER(?) `
 
 	user2 := models.User{}
-	err = prv.DB.Get(&user2, rq, username)
+	err = c.DB.Get(&user2, rq, username)
 	if err != nil {
 		return models.Contact{}, err
 	}
@@ -84,15 +87,15 @@ func CreateOrFetchContactByName(prv *services.Provider, user *models.User, usern
 		Distance:   1,
 		IsFriendly: true,
 		Playable:   true,
-		UserOne:    (*user).GetUserWithPictureURL(prv.Config.WebrootURL),
-		UserTwo:    user2.GetUserWithPictureURL(prv.Config.WebrootURL),
+		UserOne:    (*user).GetUserWithPictureURL(webroot),
+		UserTwo:    user2.GetUserWithPictureURL(webroot),
 		Turn:       1,
 	}
 
 	contact.SetOtherUser(user)
 
 	rq = `INSERT INTO APP_CONTACTS (INITIATOR, FRIEND) VALUES (?, ?)`
-	_, err = prv.DB.Exec(rq, contact.UserOne.ID, contact.UserTwo.ID, true)
+	_, err = c.DB.Exec(rq, contact.UserOne.ID, contact.UserTwo.ID, true)
 
 	if err != nil {
 		fmt.Println(err)
@@ -102,11 +105,10 @@ func CreateOrFetchContactByName(prv *services.Provider, user *models.User, usern
 	return contact, nil
 }
 
-// GetContactsForUser blabla
-func GetContactsForUser(prv *services.Provider, uid uint64) ([]models.Contact, error) {
+func (c Contact) GetContactsForUser(uid uint64, webroot string) ([]models.Contact, error) {
 	contacts := []models.Contact{}
 
-	rows, err := prv.DB.Queryx(`SELECT 	IS_FRIENDLY, FRIEND_LEVEL, PROGRESS,
+	rows, err := c.DB.Queryx(`SELECT 	IS_FRIENDLY, FRIEND_LEVEL, PROGRESS,
 										i.ID as "INITIATOR.ID", i.LAST_ACTION as "INITIATOR.LAST_ACTION", i.FIRSTNAME as "INITIATOR.FIRSTNAME", i.USERNAME as "INITIATOR.USERNAME", i.GENDER as "INITIATOR.GENDER", i.COUNTRY as "INITIATOR.COUNTRY", i.AGE as "INITIATOR.AGE", i.PICTURE as "INITIATOR.PICTURE", i.LANG as "INITIATOR.LANG",
 										f.ID as "FRIEND.ID", f.LAST_ACTION as "FRIEND.LAST_ACTION", f.FIRSTNAME as "FRIEND.FIRSTNAME", f.USERNAME as "FRIEND.USERNAME", f.GENDER as "FRIEND.GENDER", f.COUNTRY as "FRIEND.COUNTRY", f.AGE as "FRIEND.AGE", f.PICTURE as "FRIEND.PICTURE", f.LANG as "FRIEND.LANG"
 								FROM APP_CONTACTS c
@@ -122,7 +124,7 @@ func GetContactsForUser(prv *services.Provider, uid uint64) ([]models.Contact, e
 		rows.StructScan(&contact)
 		contact.SetOtherUserID(uid)
 
-		contact.User = contact.User.GetUserWithPictureURL(prv.Config.WebrootURL)
+		contact.User = contact.User.GetUserWithPictureURL(webroot)
 
 		contacts = append(contacts, contact)
 	}
@@ -132,10 +134,10 @@ func GetContactsForUser(prv *services.Provider, uid uint64) ([]models.Contact, e
 	return contacts, nil
 }
 
-func GetContactByPartnerID(prv *services.Provider, uid, uidFriend uint64) (models.Contact, error) {
+func (c Contact) GetContactByPartnerID(uid, uidFriend uint64, webroot string) (models.Contact, error) {
 	contact := models.Contact{}
 
-	row := prv.DB.QueryRowx(`SELECT IS_FRIENDLY, FRIEND_LEVEL, PROGRESS,
+	row := c.DB.QueryRowx(`SELECT IS_FRIENDLY, FRIEND_LEVEL, PROGRESS,
 									      i.ID as "INITIATOR.ID", i.LAST_ACTION as "INITIATOR.LAST_ACTION", i.FIRSTNAME as "INITIATOR.FIRSTNAME", i.USERNAME as "INITIATOR.USERNAME", i.GENDER as "INITIATOR.GENDER", i.COUNTRY as "INITIATOR.COUNTRY", i.AGE as "INITIATOR.AGE", i.PICTURE as "INITIATOR.PICTURE", i.LANG as "INITIATOR.LANG",
 										  f.ID as "FRIEND.ID", f.LAST_ACTION as "FRIEND.LAST_ACTION", f.FIRSTNAME as "FRIEND.FIRSTNAME", f.USERNAME as "FRIEND.USERNAME", f.GENDER as "FRIEND.GENDER", f.COUNTRY as "FRIEND.COUNTRY", f.AGE as "FRIEND.AGE", f.PICTURE as "FRIEND.PICTURE", f.LANG as "FRIEND.LANG"
 								FROM APP_CONTACTS c
@@ -153,7 +155,7 @@ func GetContactByPartnerID(prv *services.Provider, uid, uidFriend uint64) (model
 	}
 
 	contact.SetOtherUserID(uid)
-	contact.User = contact.User.GetUserWithPictureURL(prv.Config.WebrootURL)
+	contact.User = contact.User.GetUserWithPictureURL(webroot)
 
 	return contact, err
 }

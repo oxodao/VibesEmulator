@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/oxodao/vibes/dal"
 	"github.com/oxodao/vibes/middlewares"
 	"github.com/oxodao/vibes/models"
 	"github.com/oxodao/vibes/services"
@@ -72,7 +71,7 @@ func registerRoute(prv *services.Provider) http.HandlerFunc {
 			LatestToken:  prv.GenerateUID(20),
 		}
 
-		dal.RegisterUser(prv, &u)
+		prv.Dal.User.RegisterUser(&u)
 
 		http.SetCookie(w, &http.Cookie{
 			Name:    "PHPSESSID",
@@ -103,7 +102,7 @@ func loginRoute(prv *services.Provider) http.HandlerFunc {
 		username := r.URL.Query().Get("username")
 		password := r.URL.Query().Get("password")
 
-		u, err := dal.FindUserByUsername(prv, username)
+		u, err := prv.Dal.User.FindUserByUsername(username)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			return
@@ -143,7 +142,7 @@ func logoutRoute(prv *services.Provider) http.HandlerFunc {
 
 		// The game says the data will be wiped from the server but I think we can find
 		// a way around that to let the user log back in again
-		dal.SetLatestToken(prv, u.ID, "")
+		prv.Dal.User.SetLatestToken(u.ID, "")
 
 	}
 }

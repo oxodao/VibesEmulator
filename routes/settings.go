@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/oxodao/vibes/dal"
 	"github.com/oxodao/vibes/middlewares"
 	"github.com/oxodao/vibes/models"
 	"github.com/oxodao/vibes/services"
@@ -80,7 +79,7 @@ func setAgeRangeRoute(prv *services.Provider) http.HandlerFunc {
 
 		user.AgeFrom = ageFrom
 		user.AgeTo = ageTo
-		dal.UpdateAge(prv, user.ID, -1, ageFrom, ageTo)
+		prv.Dal.Settings.UpdateAge(user.ID, -1, ageFrom, ageTo)
 
 		userRsp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 		if err != nil {
@@ -108,7 +107,7 @@ func setAgeRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		user.Age = age
-		dal.UpdateAge(prv, user.ID, age, -1, -1)
+		prv.Dal.Settings.UpdateAge(user.ID, age, -1, -1)
 
 		userRsp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 		if err != nil {
@@ -132,7 +131,7 @@ func setFirstNameRoute(prv *services.Provider) http.HandlerFunc {
 		firstname := r.URL.Query().Get("firstName")
 
 		user.FirstName = firstname
-		dal.UpdateFirstname(prv, user.ID, firstname)
+		prv.Dal.Settings.UpdateFirstname(user.ID, firstname)
 
 		userRsp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 		if err != nil {
@@ -160,7 +159,7 @@ func setGenderRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		user.Gender = gender
-		dal.UpdateGender(prv, user.ID, gender, -1)
+		prv.Dal.Settings.UpdateGender(user.ID, gender, -1)
 
 		userRsp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 		if err != nil {
@@ -189,7 +188,7 @@ func setGenderWantedRoute(prv *services.Provider) http.HandlerFunc {
 
 		user.GenderWanted = gender
 
-		dal.UpdateGender(prv, user.ID, -1, gender)
+		prv.Dal.Settings.UpdateGender(user.ID, -1, gender)
 
 		userRsp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 		if err != nil {
@@ -217,7 +216,7 @@ func setXRatedEnabledRoute(prv *services.Provider) http.HandlerFunc {
 		} else {
 			user.IsAdult = true
 		}
-		dal.UpdateAdult(prv, user.ID, user.IsAdult)
+		prv.Dal.Settings.UpdateAdult(user.ID, user.IsAdult)
 
 		resp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 
@@ -240,7 +239,7 @@ func setGameLanguageRoute(prv *services.Provider) http.HandlerFunc {
 		}
 
 		user.Language = r.URL.Query().Get("gameLanguage")
-		dal.UpdateLanguage(prv, user.ID, user.Language)
+		prv.Dal.Settings.UpdateLanguage(user.ID, user.Language)
 
 		resp, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 
@@ -277,7 +276,7 @@ func setPictureRoute(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		dal.UpdatePicture(prv, user.ID, rndName)
+		prv.Dal.Settings.UpdatePicture(user.ID, rndName)
 
 		uploadResponse, err := json.Marshal(user.GetUserWithPictureURL(prv.Config.WebrootURL))
 		if err != nil {
