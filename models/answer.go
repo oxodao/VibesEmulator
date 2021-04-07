@@ -1,9 +1,9 @@
 package models
 
 type Answer struct {
-	ID          uint64 `json:"id"`
-	Text        string `json:"text"`
-	CommentText *string `json:"commentText"`
+	ID          int64   `db:"ANSWER_ID" json:"id"`
+	Text        string  `db:"ANSWER_TEXT" json:"text"`
+	CommentText *string `db:"-" json:"commentText"`
 }
 
 func (a Answer) GetTableName() string {

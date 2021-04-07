@@ -9,7 +9,8 @@ import (
 **/
 
 type Settings struct {
-	DB *sqlx.DB
+	DB  *sqlx.DB
+	Dal *Dal
 }
 
 func (s Settings) UpdateAge(uid uint64, age int, ageFrom int, ageTo int) {

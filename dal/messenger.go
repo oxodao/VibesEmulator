@@ -13,7 +13,8 @@ import (
  */
 
 type Messenger struct {
-	DB *sqlx.DB
+	DB  *sqlx.DB
+	Dal *Dal
 }
 
 func (m Messenger) GetUsersMessage(u *models.User, p uint64) ([]models.Message, error) {

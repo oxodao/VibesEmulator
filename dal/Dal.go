@@ -6,6 +6,7 @@ import (
 
 type Dal struct {
 	Questions Questions
+	Answers   Answers
 	User      User
 	Contact   Contact
 	Messenger Messenger
@@ -13,11 +14,14 @@ type Dal struct {
 }
 
 func New(db *sqlx.DB) Dal {
-	return Dal{
-		Questions: Questions{db},
-		User:      User{db},
-		Contact:   Contact{db},
-		Messenger: Messenger{db},
-		Settings:  Settings{db},
-	}
+	dal := &Dal{}
+
+	dal.Questions = Questions{db, dal}
+	dal.Answers = Answers{db, dal}
+	dal.User = User{db, dal}
+	dal.Contact = Contact{db, dal}
+	dal.Messenger = Messenger{db, dal}
+	dal.Settings = Settings{db, dal}
+
+	return *dal
 }

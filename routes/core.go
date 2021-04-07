@@ -150,6 +150,10 @@ func createContactWithUsernameRoute(prv *services.Provider) http.HandlerFunc {
 
 		otherUser := r.URL.Query().Get("username")
 		rndContact, err := prv.Dal.Contact.CreateOrFetchContactByName(u, otherUser, prv.Config.WebrootURL)
+		if err != nil {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
 
 		resp, err := json.Marshal(rndContact)
 		if err != nil {

@@ -8,7 +8,8 @@ import (
 )
 
 type Contact struct {
-	DB *sqlx.DB
+	DB  *sqlx.DB
+	Dal *Dal
 }
 
 // GenerateRandomContacts finds 5 random people to add to your suggestions.
@@ -44,7 +45,7 @@ func (c Contact) GenerateRandomContacts(uid uint64) ([]models.User, error) {
 	return users, err
 }
 
-func (c Contact) CreateOrFetchContactByName(user *models.User, webroot, username string) (models.Contact, error) {
+func (c Contact) CreateOrFetchContactByName(user *models.User, username, webroot string) (models.Contact, error) {
 	/**
 		@TODO / Missing features:
 			- Calculate the distance
@@ -75,10 +76,7 @@ func (c Contact) CreateOrFetchContactByName(user *models.User, webroot, username
 
 	rows.Close()
 
-	rq = `SELECT * FROM APP_USER WHERE LOWER(USERNAME) = LOWER(?) `
-
-	user2 := models.User{}
-	err = c.DB.Get(&user2, rq, username)
+	user2, err := c.Dal.User.FindUserByUsername(username)
 	if err != nil {
 		return models.Contact{}, err
 	}

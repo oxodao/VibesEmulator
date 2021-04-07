@@ -39,16 +39,32 @@ func getData(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		phase := models.NewPhase([]models.Selection{
+		q1, _ := prv.Dal.Questions.Find(1)
+		q2, _ := prv.Dal.Questions.Find(2)
+		q3, _ := prv.Dal.Questions.Find(3)
+
+		p1 := models.NewPhase([]models.Selection{
 			{
-				Question: models.Question{
-					ID:   0,
-					Text: "Toto q0",
-				},
-				Answers: []models.Answer{
-					{ID: 0, Text: "toto1", CommentText: nil},
-					{ID: 1, Text: "toto2", CommentText: nil},
-				},
+				Question: *q1,
+				Answers: q1.Answers,
+				UserAnswer: nil,
+				PartnerAnswer: nil,
+			},
+		})
+
+		p2 := models.NewPhase([]models.Selection{
+			{
+				Question: *q2,
+				Answers: q2.Answers,
+				UserAnswer: nil,
+				PartnerAnswer: nil,
+			},
+		})
+
+		p3 := models.NewPhase([]models.Selection{
+			{
+				Question: *q3,
+				Answers: q3.Answers,
 				UserAnswer: nil,
 				PartnerAnswer: nil,
 			},
@@ -57,9 +73,9 @@ func getData(prv *services.Provider) http.HandlerFunc {
 		g := models.Game{
 			Contact:             c,
 			FinishedQuestionsID: []int64{},
-			Phase0: &phase,
-			Phase1: &phase,
-			Phase2: &phase,
+			Phase0: &p1,
+			Phase1: &p2,
+			Phase2: &p3,
 			ProgressCalculation: models.ProgressCalculation{
 				A:    0,
 				B:    0,

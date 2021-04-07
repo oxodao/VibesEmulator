@@ -6,10 +6,11 @@ import (
 )
 
 type Questions struct {
-	DB *sqlx.DB
+	DB  *sqlx.DB
+	Dal *Dal
 }
 
-func (q Questions) InsertQuestion(question models.Question) error {
+func (q Questions) InsertQuestion(question *models.Question) error {
 	resp, err := q.DB.Exec(`INSERT INTO QUESTION (QUESTION_TEXT) VALUES (?)`, question.Text)
 	if err != nil {
 		return err
@@ -20,12 +21,27 @@ func (q Questions) InsertQuestion(question models.Question) error {
 		return err
 	}
 
+	question.ID = id
+
 	for _, a := range question.Answers {
-		_, err := q.DB.Exec(`INSERT INTO ANSWER (ANSWER_TEXT, QUESTION_ID) VALUES (?, ?)`, a.Text, id)
-		if err != nil {
-			return err
-		}
+		err = q.Dal.Answers.Insert(&a, id)
 	}
 
 	return nil
+}
+
+func (q Questions) Find(id int64) (*models.Question, error) {
+	row := q.DB.QueryRowx(`SELECT QUESTION_ID, QUESTION_TEXT FROM QUESTION WHERE QUESTION_ID = ?`, id)
+	if row.Err() != nil {
+		return nil, row.Err()
+	}
+
+	question := models.Question{}
+	err := row.StructScan(&question)
+	if err != nil {
+		return nil, err
+	}
+
+	question.Answers, err = q.Dal.Answers.FindForQuestion(question.ID)
+	return &question, err
 }

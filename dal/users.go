@@ -6,7 +6,8 @@ import (
 )
 
 type User struct {
-	DB *sqlx.DB
+	DB  *sqlx.DB
+	Dal *Dal
 }
 
 func (usr User) FindUserByToken(token string) (*models.User, error) {
@@ -24,17 +25,14 @@ func (usr User) FindUserByToken(token string) (*models.User, error) {
 }
 
 func (usr User) FindUserByUsername(name string) (*models.User, error) {
-	var user *models.User = &models.User{}
-	row, err := usr.DB.Queryx("SELECT * FROM APP_USER WHERE LOWER(USERNAME) = LOWER(?)", name)
-	if err != nil {
-		return nil, err
+	var user = models.User{}
+	row := usr.DB.QueryRowx("SELECT * FROM APP_USER WHERE LOWER(USERNAME) = LOWER(?) LIMIT 1", name)
+	if row.Err() != nil {
+		return nil, row.Err()
 	}
 
-	row.Next()
-	err = row.StructScan(user)
-	row.Close()
-
-	return user, err
+	err := row.StructScan(&user)
+	return &user, err
 }
 
 func (usr User) SetLatestToken(uid uint64, token string) error {
