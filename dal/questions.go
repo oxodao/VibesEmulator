@@ -45,3 +45,19 @@ func (q Questions) Find(id int64) (*models.Question, error) {
 	question.Answers, err = q.Dal.Answers.FindForQuestion(question.ID)
 	return &question, err
 }
+
+func (q Questions) FindRandom() (*models.Question, error) {
+	row := q.DB.QueryRowx(`SELECT QUESTION_ID, QUESTION_TEXT FROM QUESTION ORDER BY RANDOM() LIMIT 1`)
+	if row.Err() != nil {
+		return nil, row.Err()
+	}
+
+	question := models.Question{}
+	err := row.StructScan(&question)
+	if err != nil {
+		return nil, err
+	}
+
+	question.Answers, err = q.Dal.Answers.FindForQuestion(question.ID)
+	return &question, err
+}

@@ -14,6 +14,8 @@ func InitializeDb(prv *services.Provider) {
 		models.Message{},
 		models.Question{},
 		models.Answer{},
+		models.Phase{},
+		models.Selection{},
 	}
 
 	fmt.Println("Dropping old tables...")

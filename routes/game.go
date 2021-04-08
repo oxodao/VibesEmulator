@@ -39,43 +39,20 @@ func getData(prv *services.Provider) http.HandlerFunc {
 			return
 		}
 
-		q1, _ := prv.Dal.Questions.Find(1)
-		q2, _ := prv.Dal.Questions.Find(2)
-		q3, _ := prv.Dal.Questions.Find(3)
+		phases, err := prv.Dal.Phase.FindLatestPhases(&c)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			fmt.Println(err)
 
-		p1 := models.NewPhase([]models.Selection{
-			{
-				Question: *q1,
-				Answers: q1.Answers,
-				UserAnswer: nil,
-				PartnerAnswer: nil,
-			},
-		})
-
-		p2 := models.NewPhase([]models.Selection{
-			{
-				Question: *q2,
-				Answers: q2.Answers,
-				UserAnswer: nil,
-				PartnerAnswer: nil,
-			},
-		})
-
-		p3 := models.NewPhase([]models.Selection{
-			{
-				Question: *q3,
-				Answers: q3.Answers,
-				UserAnswer: nil,
-				PartnerAnswer: nil,
-			},
-		})
+			return
+		}
 
 		g := models.Game{
 			Contact:             c,
 			FinishedQuestionsID: []int64{},
-			Phase0: &p1,
-			Phase1: &p2,
-			Phase2: &p3,
+			Phase0: phases[2],
+			Phase1: phases[1],
+			Phase2: phases[0],
 			ProgressCalculation: models.ProgressCalculation{
 				A:    0,
 				B:    0,

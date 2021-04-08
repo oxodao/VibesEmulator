@@ -2,18 +2,18 @@ package models
 
 // Contact represent a friend
 type Contact struct {
-	ID                 int  `json:"id"`
-	Distance           int  `json:"distance"`
-	IsFriendly         bool `json:"isFriendly" db:"IS_FRIENDLY"`
-	Level              int  `json:"level" db:"FRIEND_LEVEL"`
-	Playable           bool `json:"playable" db:"-"`
-	Progress           int  `json:"progress" db:"PROGRESS"`
-	LastAction         uint `db:"LAST_ACTION"`
-	UnreadMessageCount int  `json:"unreadMessageCount" db:"-"`
-	User               User `json:"user" db:"-"`
-	Turn               int  `json:"-" db:"TURN"`
-	UserOne            User `json:"-" db:"INITIATOR"`
-	UserTwo            User `json:"-" db:"FRIEND"`
+	ID                 int64 `json:"id"`
+	Distance           int   `json:"distance"`
+	IsFriendly         bool  `json:"isFriendly" db:"IS_FRIENDLY"`
+	Level              int   `json:"level" db:"FRIEND_LEVEL"`
+	Playable           bool  `json:"playable" db:"-"`
+	Progress           int   `json:"progress" db:"PROGRESS"`
+	LastAction         uint  `db:"LAST_ACTION"`
+	UnreadMessageCount int   `json:"unreadMessageCount" db:"-"`
+	User               User  `json:"user" db:"-"`
+	Turn               int   `json:"-" db:"TURN"`
+	UserOne            User  `json:"-" db:"INITIATOR"`
+	UserTwo            User  `json:"-" db:"FRIEND"`
 }
 
 // SetOtherUser sets the user to the contact's user
@@ -32,7 +32,6 @@ func (c *Contact) SetOtherUserID(uid uint64) {
 	}
 
 }
-
 
 func (c Contact) GetTableName() string {
 	return "APP_CONTACTS"
